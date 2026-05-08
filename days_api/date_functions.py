@@ -4,6 +4,7 @@ from datetime import datetime, date
 
 
 def convert_to_datetime(date_val: str) -> datetime:
+    """Converts datetime string to datetime"""
     if not isinstance(date_val, str):
         raise ValueError("Value must be a string")
 
@@ -17,6 +18,7 @@ def convert_to_datetime(date_val: str) -> datetime:
 
 
 def get_days_between(first: datetime, last: datetime) -> int:
+    """Get day between two dates"""
 
     if not isinstance(first, datetime) or not isinstance(last, datetime):
         raise TypeError("Datetimes required.")
@@ -34,11 +36,12 @@ def get_day_of_week_on(date_val: datetime) -> str:
 
 
 def get_current_age(birthdate: date) -> int:
+    """Gets current age from birthday"""
 
     if not isinstance(birthdate, date):
         raise TypeError("Date required.")
 
-    today = date.today
+    today = date.today()
 
     age = today.year - birthdate.year
 
