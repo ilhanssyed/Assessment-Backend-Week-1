@@ -50,7 +50,7 @@ def between():
         last = convert_to_datetime(data["last"])
 
     except ValueError:
-        return jsonify({"error": "Unable to convert value to datetime."})
+        return jsonify({"error": "Unable to convert value to datetime."}), 400
 
     days_between = get_days_between(first, last)
 

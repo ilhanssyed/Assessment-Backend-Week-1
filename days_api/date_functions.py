@@ -6,12 +6,12 @@ from datetime import datetime, date
 def convert_to_datetime(date_val: str) -> datetime:
     """Converts datetime string to datetime"""
     if not isinstance(date_val, str):
-        raise ValueError("Value must be a string")
+        raise ValueError("Unable to convert value to datetime.")
 
     try:
         return datetime.strptime(date_val, "%d.%m.%Y")
 
-    except (ValueError, TypeError) as exc:
+    except (ValueError, TypeError):
         raise ValueError(
             "Unable to convert value to datetime."
         )
