@@ -4,7 +4,7 @@
 
 from datetime import datetime, date
 
-from flask import Flask, Response, request, jsonify
+from flask import Flask, request, jsonify
 
 from date_functions import (convert_to_datetime, get_day_of_week_on,
                             get_days_between, get_current_age)
@@ -35,19 +35,19 @@ def index():
     return jsonify({"message": "Welcome to the Days API."})
 
 
-@app.get("/between")
+@app.post("/between")
 def between():
-
+    """Gets the days between two dates"""
     add_to_history(request)
 
     data = request.get_json()
 
     if not data or "first" not in data or "last" not in data:
-        return jsonify({"error": True, "message": "Missing required data"}), 400
+        return jsonify({"error": "Missing required data."}), 400
 
     try:
-        first = convert_to_datetime(["first"])
-        last = convert_to_datetime(["last"])
+        first = convert_to_datetime(data["first"])
+        last = convert_to_datetime(data["last"])
 
     except ValueError:
         return jsonify({"error": "Unable to convert value to datetime."})
@@ -59,6 +59,7 @@ def between():
 
 @app.post("/weekday")
 def weekday():
+    """gets the day of the week"""
 
     add_to_history(request)
 
@@ -70,11 +71,62 @@ def weekday():
     try:
         date_val = convert_to_datetime(data["date"])
     except ValueError:
-        return jsonify({"error": "Unable to convert to datetime,"}), 400
+        return jsonify({"error": "Unable to convert value to datetime."}), 400
 
     weekday = get_day_of_week_on(date_val)
 
     return jsonify({"weekday": weekday})
+
+
+@app.get("/history")
+def history():
+    """Return API request history."""
+
+    add_to_history(request)
+
+    number = request.args.get("number", default=5)
+
+    try:
+        number = int(number)
+
+        if number < 1 or number > 20:
+            raise ValueError
+
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Number must be an integer between 1 and 20."
+        }), 400
+
+    return jsonify(app_history[::-1][:number])
+
+
+@app.delete("/history")
+def delete_history():
+    """Deletes all history"""
+
+    clear_history()
+
+    return jsonify({"status": "History cleared"})
+
+
+@app.get("/current_age")
+def current_age():
+    """Return current age from birthdate."""
+
+    date_parameter = request.args.get("date")
+
+    if not date_parameter:
+        return jsonify({"error": "Date parameter is required."}), 400
+
+    try:
+        birthdate = datetime.strptime(date_parameter, "%Y-%m-%d").date()
+
+    except ValueError:
+        return jsonify({"error": "Value for date parameter is invalid."}), 400
+
+    current_age = get_current_age(birthdate)
+
+    return jsonify({"current_age": current_age})
 
 
 if __name__ == "__main__":
