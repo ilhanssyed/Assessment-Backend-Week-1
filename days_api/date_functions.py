@@ -29,6 +29,7 @@ def get_days_between(first: datetime, last: datetime) -> int:
 
 
 def get_day_of_week_on(date_val: datetime) -> str:
+    """gets the day of the week eg. Monday"""
     if not isinstance(date_val, datetime):
         raise TypeError("Datetime required.")
 
