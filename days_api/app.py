@@ -22,6 +22,7 @@ def add_to_history(current_request):
         "route": current_request.endpoint
     })
 
+
 def clear_history():
     """Clears the app history."""
     app_history.clear()
@@ -30,7 +31,50 @@ def clear_history():
 @app.get("/")
 def index():
     """Returns an API welcome messsage."""
+
     return jsonify({"message": "Welcome to the Days API."})
+
+
+@app.get("/between")
+def between():
+
+    add_to_history(request)
+
+    data = request.get_json()
+
+    if not data or "first" not in data or "last" not in data:
+        return jsonify({"error": True, "message": "Missing required data"}), 400
+
+    try:
+        first = convert_to_datetime(["first"])
+        last = convert_to_datetime(["last"])
+
+    except ValueError:
+        return jsonify({"error": "Unable to convert value to datetime."})
+
+    days_between = get_days_between(first, last)
+
+    return jsonify({"days": days_between})
+
+
+@app.post("/weekday")
+def weekday():
+
+    add_to_history(request)
+
+    data = request.get_json()
+
+    if not data or "date" not in data:
+        return jsonify({"error": "Missing required data."}), 400
+
+    try:
+        date_val = convert_to_datetime(data["date"])
+    except ValueError:
+        return jsonify({"error": "Unable to convert to datetime,"}), 400
+
+    weekday = get_day_of_week_on(date_val)
+
+    return jsonify({"weekday": weekday})
 
 
 if __name__ == "__main__":
